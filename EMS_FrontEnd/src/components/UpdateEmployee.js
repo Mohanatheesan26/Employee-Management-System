@@ -1,21 +1,33 @@
 import React, { Component } from 'react'
 import EmployeeService from '../services/EmployeeService';
 
-export default class AddEmployee extends Component {
+export default class UpdateEmployee extends Component {
     
     constructor(props) {
         super(props)
     
         this.state = {
-             firstname:'',
-             lastname:'',
-             emailid:'',
+            id: this.props.match.params.id,
+            firstname:'',
+            lastname:'',
+            emailid:'',
         }
 
         this.changefirstnameHandler=this.changefirstnameHandler.bind(this);
         this.changelastnameHandler=this.changelastnameHandler.bind(this);
         this.changeemailidHandler=this.changeemailidHandler.bind(this);
-        this.saveEmployee=this.saveEmployee.bind(this);
+        this.updateEmployee=this.updateEmployee.bind(this);
+    }
+
+    componentDidMount(){
+        EmployeeService.getEmployeeById(this.state.id).then((res) =>{
+            let employee = res.data;
+            this.setState({
+                firstname: employee.firstname,
+                lastname: employee.lastname,
+                emailid: employee.emailid
+            });
+        });
     }
     
     changefirstnameHandler=(event)=>{
@@ -30,18 +42,10 @@ export default class AddEmployee extends Component {
         this.setState({emailid: event.target.value});
     }
 
-    saveEmployee = (e) =>{
+    updateEmployee = (e) =>{
         e.preventDefault();
         let employee = {firstname: this.state.firstname, lastname:this.state.lastname, emailid: this.state.emailid};
         console.log('employee =>' + JSON.stringify(employee));
-        
-        EmployeeService.AddEmployee(employee)
-        // .then(Response =>{
-        //     this.probs.history.push('/employees');
-        // })
-        // .catch(error => {
-        //     console.log(error.response)
-        //   });
     }
 
     cancel(){
@@ -54,7 +58,7 @@ export default class AddEmployee extends Component {
                 <div className="container">
                     <div className="row">
                         <div className="card col-md-6 offset-md-3">
-                            <h3 className="text-center">Add Employee</h3>
+                            <h3 className="text-center">Update Employee</h3>
                             <div className="card-body">
                                 <form>
                                     <div className="form-group mt-4">
@@ -73,7 +77,7 @@ export default class AddEmployee extends Component {
                                         value={this.state.emailid} onChange={this.changeemailidHandler}/>
                                     </div>
                                     <div className="col-self-center my-4">
-                                        <button className="btn btn-success" onClick={this.saveEmployee}>Save</button>
+                                        <button className="btn btn-success" onClick={this.updateEmployee}>Save</button>
                                         <button className="btn btn-danger" onClick={this.cancel.bind(this)} style={{marginLeft:"10px"}} >Cancel</button>
                                     </div>
                                 </form>
